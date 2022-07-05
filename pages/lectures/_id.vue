@@ -2,6 +2,11 @@
 v-container
     v-card-title {{ lecture.name }}
     v-card-subtitle {{ lecture.teacher_name }} 先生
+    h1 リアクション
+    // それぞれのリアクションを表示する
+    v-card(v-for="reaction in reactions" v-bind:key="reaction.id")
+       p {{ reaction.data.ts }}
+       p {{ reaction.data.type }}
 </template>
 
 <script>
@@ -10,6 +15,7 @@ export default {
     data() {
         return {
             lecture: {},
+            reactions: [],
         }
     },
     head() {
@@ -25,6 +31,16 @@ export default {
             .get()
             .then((doc) => {
                 this.lecture = doc.data()
+            })
+        database
+            .collection('lectures')
+            .doc(this.$route.params.id)
+            .collection('reactions')
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    this.reactions.push({ id: doc.id, data: doc.data() })
+                })
             })
     },
     methods: {},
