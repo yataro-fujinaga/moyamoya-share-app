@@ -9,6 +9,7 @@ v-container
       v-btn(to='/lectures' class="pa-2")
         v-icon mdi-account-school-outline
         span 学生
+      v-btn(to='/teacher' class="pa-2") test
 </template>
 
 <script>
