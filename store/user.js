@@ -7,7 +7,7 @@ export const mutations = {
   setId (state, newId) {
     state.id = newId
   },
-  setType(state,newType) = {
+  setType(state,newType) {
     state.type = newType
   },
   

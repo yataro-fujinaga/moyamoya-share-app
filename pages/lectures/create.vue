@@ -43,6 +43,22 @@ export default {
     }
   },
   mounted() {},
-  methods: {},
+  methods: {
+    registerLecture: async () => {
+      const database = this.$fire.firestore
+      try {
+        await database.addDoc(
+          database.collection(database, 'lectures', {
+            name: this.form.lecture_name,
+            
+          })
+        )
+      } catch (error) {
+        console.log(error)
+      }
+      const newId = 0 // 登録後のlectureの取得方法を調べる
+      this.$store.commit("selected_lecture/setId", newId);
+    },
+  },
 }
 </script>
