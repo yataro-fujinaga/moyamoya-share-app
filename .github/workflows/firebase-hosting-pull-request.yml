@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Create .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: echo $ENV_FILE | base64 --decode > .env
       - uses: actions/setup-node@v3
         with:
           node-version: 16.14.2
