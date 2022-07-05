@@ -3,9 +3,8 @@ v-container
   v-row
     v-col(cols='12', xs='12', sm='12', md='12')
       v-card(v-for='lecture in lectures', :key='lecture.id')
-        v-card-title 情報数学A
-        v-card-subtitle 若林先生
-        v-card-text 情報数学A懐かしい
+        v-card-title {{ lecture.name }}
+        v-card-subtitle {{ lecture.teacher_name }}
 </template>
 
 <script>
@@ -21,7 +20,17 @@ export default {
       title: 'レクチャー一覧',
     }
   },
-  mounted() {},
+  mounted() {
+    const database = this.$fire.firestore
+    database
+      .collection('lectures')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          this.lectures(doc)
+        })
+      })
+  },
   methods: {},
 }
 </script>
