@@ -4,7 +4,7 @@ v-container
     v-col(cols='12', xs='12', sm='12', md='12')
       v-card(v-for='lecture in lectures', :key='lecture.id')
         v-card-title {{ lecture.name }}
-        v-card-subtitle {{ lecture.teacher_name }}
+        v-card-subtitle {{ lecture.teacher_name }} 先生
 </template>
 
 <script>
@@ -27,7 +27,7 @@ export default {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          this.lectures(doc)
+          this.lectures.push(doc.data())
         })
       })
   },
