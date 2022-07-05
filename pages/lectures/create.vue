@@ -42,22 +42,25 @@ export default {
       title: 'レクチャー作成',
     }
   },
-  mounted() {},
+  mounted() {
+    // ここでfirstore
+  },
   methods: {
-    registerLecture: async () => {
+    registerLecture(){
       const database = this.$fire.firestore
-      try {
-        await database.addDoc(
-          database.collection(database, 'lectures', {
+      database
+        .collection("lectures")
+        .add({
             name: this.form.lecture_name,
             teacher_name: this.form.teacher_name,
-          }).collection("reactions")
-        )
-      } catch (error) {
-        console.log(error)
-      }
-      const newId = 0 // 登録後のlectureの取得方法を調べる
-      this.$store.commit("selected_lecture/setId", newId);
+          })
+        // ).then((res)=>{
+        //   console.log(res);
+        // }).catch(error){
+        //   console.log(error);
+        // };
+        const newId = 0 // 登録後のlectureの取得方法を調べる
+        this.$store.commit("selected_lecture/setId", newId);
     },
   },
 }

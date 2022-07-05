@@ -13,25 +13,24 @@ export default {
     }
   },
   methods: {
-    postFirebase: async (formObj,reactionType) => {
+    postFirebase(reactionType){
       const database = this.$fire.firestore
-      try {
-        await database.addDoc(
-          database.collection(database, 'lectures/reactions/JngtPpv4ZQ9VwPUIca3C/reactions', {
+      database
+        .collection('lectures/JngtPpv4ZQ9VwPUIca3C/reactions')
+        .add({
             ts: Date.now(),
-            type: "good",
-            uid: "test",
-          })
-        )
-      } catch (error) {
-        console.log(error)
+            type: "good",// とりあえず
+          }
+        ).then(()=>{
+          console.log("post");
+        });
       }
     },
     // beforePost(){
 
     // }
     
-  }
+  
   
 }
 
