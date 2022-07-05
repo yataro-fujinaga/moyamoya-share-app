@@ -13,6 +13,8 @@ jobs:
         with:
           node-version: 16.14.2
           cache: 'npm'
+      - run: npm i -g yarn
+      - run: yarn install
       - run: yarn generate
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
