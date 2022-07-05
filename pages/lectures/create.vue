@@ -50,8 +50,8 @@ export default {
         await database.addDoc(
           database.collection(database, 'lectures', {
             name: this.form.lecture_name,
-            
-          })
+            teacher_name: this.form.teacher_name,
+          }).collection("reactions")
         )
       } catch (error) {
         console.log(error)
