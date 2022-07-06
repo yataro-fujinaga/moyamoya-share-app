@@ -1,7 +1,7 @@
 <template>
     <div>
-        test
-        <button @click="postFirebase">post</button>   
+        <button @click="postFirebase('good')">good</button>  
+        <button @click="postFirebase('bad')">bad</button> 
     </div>
 </template>
 
@@ -13,25 +13,16 @@ export default {
     }
   },
   methods: {
-    postFirebase(reactionType){
+    postFirebase(reactionType){ 
       const database = this.$fire.firestore
       database
         .collection('lectures/JngtPpv4ZQ9VwPUIca3C/reactions')
         .add({
-            ts: Date.now(),
-            type: "good",// とりあえず
-          }
-        ).then(()=>{
-          console.log("post");
+            ts: new Date(),
+            type: reactionType,
         });
       }
     },
-    // beforePost(){
-
-    // }
-    
-  
-  
 }
 
 
