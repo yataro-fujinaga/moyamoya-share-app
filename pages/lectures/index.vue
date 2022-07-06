@@ -2,9 +2,9 @@
 v-container
   v-row
     v-col(cols='12', xs='12', sm='12', md='12')
-      v-card(v-for='lecture in lectures', :key='lecture.id')
-        v-card-title {{ lecture.name }}
-        v-card-subtitle {{ lecture.teacher_name }} 先生
+      v-card(v-for="lecture in lectures" v-bind:key="lecture.id" @click="ToLecture(lecture.id)" )
+          v-card-title {{ lecture.data.name }}
+          v-card-subtitle {{ lecture.data.teacher_name }} 先生
 </template>
 
 <script>
@@ -27,10 +27,25 @@ export default {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          this.lectures.push(doc.data())
+          this.lectures.push({ id: doc.id, data: doc.data() })
         })
       })
   },
-  methods: {},
+  methods: {
+    ToLecture(id){
+      const userType = this.$store.state.user.type
+      switch(userType){
+        case "student":
+          this.$router.push('/lectures/student/'+id)
+          break;
+        case "teacher":
+          this.$router.push('/lectures/teacher/'+id)
+          break;
+        default:
+          this.$router.push('/')
+      }
+      
+    }
+  },
 }
 </script>

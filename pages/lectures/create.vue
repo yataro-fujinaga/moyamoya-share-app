@@ -42,7 +42,25 @@ export default {
       title: 'レクチャー作成',
     }
   },
-  mounted() {},
-  methods: {},
+  mounted() {
+    // ここでfirstore
+  },
+  methods: {
+    registerLecture(){
+      const database = this.$fire.firestore
+      database
+        .collection("lectures")
+        .add({
+            name: this.form.lecture_name,
+            teacher_name: this.form.teacher_name,
+        }).then((res) =>{
+          this.$router.push('/lectures/teacher/'+res.id)
+        })
+        // .catch((error) => {
+        //   console.log(error)
+        // })
+        
+    },
+  },
 }
 </script>
