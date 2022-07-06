@@ -47,20 +47,18 @@ export default {
   },
   methods: {
     registerLecture(){
+      // this.$store.commit("selected_lecture/setId", newId); //杉山さんの実装方法による
       const database = this.$fire.firestore
       database
         .collection("lectures")
         .add({
             name: this.form.lecture_name,
             teacher_name: this.form.teacher_name,
-          })
-        // ).then((res)=>{
-        //   console.log(res);
-        // }).catch(error){
-        //   console.log(error);
-        // };
-        const newId = 0 // 登録後のlectureの取得方法を調べる
-        this.$store.commit("selected_lecture/setId", newId);
+        })
+        // .catch((error) => {
+        //   console.log(error)
+        // })
+        
     },
   },
 }
