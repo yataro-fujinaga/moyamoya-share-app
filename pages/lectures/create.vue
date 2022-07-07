@@ -2,6 +2,7 @@
 v-container
   v-row
     v-col(cols='12', xs='12', sm='12', md='12')
+      BackButton(toUrl='/lectures')
       v-form(ref='form')
         p.font-weight-bold 講義フォーム
         v-text-field(
@@ -42,24 +43,22 @@ export default {
       title: 'レクチャー作成',
     }
   },
-  mounted() {
-    // ここでfirstore
-  },
+  mounted() {},
   methods: {
-    registerLecture(){
+    registerLecture() {
       const database = this.$fire.firestore
       database
-        .collection("lectures")
+        .collection('lectures')
         .add({
-            name: this.form.lecture_name,
-            teacher_name: this.form.teacher_name,
-        }).then((res) =>{
-          this.$router.push('/lectures/teacher/'+res.id)
+          name: this.form.lecture_name,
+          teacher_name: this.form.teacher_name,
         })
-        // .catch((error) => {
-        //   console.log(error)
-        // })
-        
+        .then((res) => {
+          this.$router.push('/lectures/teacher/' + res.id)
+        })
+      // .catch((error) => {
+      //   console.log(error)
+      // })
     },
   },
 }
