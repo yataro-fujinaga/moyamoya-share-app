@@ -10,6 +10,12 @@ v-container
       v-card-text
         p {{ reaction.data.ts }}
         p {{ reaction.data.type }}
+  <button @click="nextSlide">進む</button>
+  <button @click="prevSlide">戻る</button>
+  <button @click="startLecture">授業開始</button>
+  <button @click="finishLecture">授業終了</button>
+  p {{moyamoya}}
+  p {{page}}
 </template>
 
 <script>
@@ -22,6 +28,11 @@ export default {
     return {
       lecture: {},
       reactions: [],
+      moyamoya: 50,
+      page: 0,
+      slideLogId: "",
+      classStarted: false,
+
     }
   },
   head() {
@@ -49,6 +60,128 @@ export default {
         })
       })
   },
-  methods: {},
+  methods: {
+        async nextSlide(){
+            const database = this.$fire.firestore
+            await this.getMoyamoya(this.page)
+            if(this.moyamoya > 50){
+                await this.delay(0.5) // すぐ次のスライドに進むともやもや度の表示が見れないため
+                alert("もやもやが爆発する前に復習しましょう！")
+            }else if(this.moyamoya <= 50){
+                const nowTime = new Date()
+                await database // 今のページのendTsを記録
+                    .collection('lectures/'+this.$route.params.id+'/slideLogs')
+                    .doc(this.slideLogId)
+                    .update({
+                        endTs: nowTime
+                    })
+                const addedDoc = await database // 次のページのstartTsを記録
+                    .collection('lectures/'+this.$route.params.id+'/slideLogs')
+                    .add({
+                        page: this.page+1,
+                        startTs: nowTime,
+                        endTs: null
+                    })
+                this.slideLogId = addedDoc.id
+                await this.delay(0.5) // すぐ次のスライドに進むともやもや度の表示が見れないため
+                this.page += 1
+                await this.getMoyamoya(this.page)
+            }else {
+                alert("エラーが発生しました")
+            }
+        },
+        async prevSlide(){
+            const nowTime = new Date()
+            const database = this.$fire.firestore
+            await database // 今のページのendTsを記録
+                    .collection('lectures/'+this.$route.params.id+'/slideLogs')
+                    .doc(this.slideLogId)
+                    .update({
+                        endTs: nowTime
+                    })
+            const addedDoc = await database // 次のページのendTsを記録
+                .collection('lectures/'+this.$route.params.id+'/slideLogs')
+                .add({
+                    page: this.page-1,
+                    startTs: nowTime,
+                    endTs: null
+                })
+            
+            this.slideLogId = addedDoc.id
+            this.page -= 1
+            this.getMoyamoya(this.page)
+        },
+        async startLecture(){
+            const database = this.$fire.firestore
+            const nowTime = new Date()
+            this.page = 1
+            const addDoc = await database
+                .collection('lectures/'+this.$route.params.id+'/slideLogs')
+                .add({
+                    page: this.page,
+                    startTs: nowTime,
+                    endTs: null
+                })
+            this.slideLogId = addDoc.id
+            this.classStarted = true
+        },
+        async finishLecture(){
+          await this.deleteCollection('lectures/'+this.$route.params.id+'/slideLogs')
+          await this.deleteCollection('lectures/'+this.$route.params.id+'/reactions')
+          this.classStarted = false
+        },
+        async deleteCollection(path){
+          const database = this.$fire.firestore
+          const delCollection = await database
+            .collection(path)
+            .get()
+          console.log(delCollection)
+          await Promise.all(delCollection.docs.map(async (doc) =>{
+                await database
+                  .collection(path)
+                  .doc(doc.id)
+                  .delete()
+            }))
+          
+        },
+        async getMoyamoya(page){
+            const database = this.$fire.firestore
+            let allGoodReaction = 0
+            let allBadReaction = 0
+            const nowSlideLogsDoc = await database
+                .collection('lectures/'+this.$route.params.id+'/slideLogs')
+                .where("page","==",page)
+                .get()
+            await Promise.all(nowSlideLogsDoc.docs.map(async (doc) =>{
+                let endTs = doc.data().endTs
+                if(doc.data().endTs === null){
+                    
+                    endTs = new Date()
+                }
+                const reaction = await database
+                    .collection('lectures/'+this.$route.params.id+'/reactions')
+                    .where("ts","<=",endTs)
+                    .where("ts",">=",doc.data().startTs)
+                    .get()
+                const badReaction = reaction.docs.filter((element) => element.data().type === "bad")
+                const goodReaction = reaction.docs.filter((element) => element.data().type === "good")
+                allBadReaction += badReaction.length
+                allGoodReaction += goodReaction.length
+            }))
+            if(allBadReaction+allGoodReaction === 0){
+                this.moyamoya = 50
+            }else{
+                this.moyamoya = parseInt((allBadReaction/(allGoodReaction + allBadReaction))*100)
+            }
+            
+        
+        },
+        delay(n){
+            return new Promise(function(resolve){
+                setTimeout(resolve,n*1000);
+            });
+        }
+
+    },
 }
 </script>
