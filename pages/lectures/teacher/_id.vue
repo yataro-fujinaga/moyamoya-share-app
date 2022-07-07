@@ -13,6 +13,7 @@ v-container
   <button @click="nextSlide">進む</button>
   <button @click="prevSlide">戻る</button>
   <button @click="startLecture">授業開始</button>
+  <button @click="finishLecture">授業終了</button>
   p {{moyamoya}}
   p {{page}}
 </template>
@@ -30,6 +31,8 @@ export default {
       moyamoya: 50,
       page: 0,
       slideLogId: "",
+      classStarted: false,
+
     }
   },
   head() {
@@ -120,6 +123,26 @@ export default {
                     endTs: null
                 })
             this.slideLogId = addDoc.id
+            this.classStarted = true
+        },
+        async finishLecture(){
+          await this.deleteCollection('lectures/'+this.$route.params.id+'/slideLogs')
+          await this.deleteCollection('lectures/'+this.$route.params.id+'/reactions')
+          this.classStarted = false
+        },
+        async deleteCollection(path){
+          const database = this.$fire.firestore
+          const delCollection = await database
+            .collection(path)
+            .get()
+          console.log(delCollection)
+          await Promise.all(delCollection.docs.map(async (doc) =>{
+                await database
+                  .collection(path)
+                  .doc(doc.id)
+                  .delete()
+            }))
+          
         },
         async getMoyamoya(page){
             const database = this.$fire.firestore
