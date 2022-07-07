@@ -22,6 +22,7 @@ export default {
     return {
       lecture: {},
       reactions: [],
+      
     }
   },
   head() {
