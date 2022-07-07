@@ -15,7 +15,7 @@ v-container
         v-card-title.font-weight-bold モヤモヤ
         v-divider
         v-card-text
-          .mb-2(v-if='page !== 0')
+          .mb-2(v-if='classStarted')
             v-progress-linear(
               color='red',
               background-color='blue lighten-4',
@@ -23,11 +23,24 @@ v-container
               :value='moyamoya',
               striped
             )
+          #slide-button.mb-2.d-flex(v-if='page !== 0')
+            v-col.text-center(cols='4')
+              v-btn(depressed, fab, color='teal darken-1', @click='prevSlide') 
+                v-icon.white--text mdi-arrow-left
+            v-col.text-center(cols='4')
+              v-btn.white--text.font-weight-bold(
+                depressed,
+                fab,
+                color='teal lighten-2'
+              ) {{ page }}
+            v-col.text-center(cols='4')
+              v-btn(depressed, fab, color='teal darken-1', @click='nextSlide')
+                v-icon.white--text mdi-arrow-right
           v-btn.white--text(
             @click='startLecture',
             block,
             color='teal darken-1',
-            v-if='page === 0'
+            v-if='!classStarted'
           )
             v-icon mdi-play
             span 授業開始
@@ -39,16 +52,6 @@ v-container
           )
             v-icon mdi-stop
             span 授業終了
-          #slide-button.mt-2.d-flex(v-if='page !== 0')
-            v-col.text-center(cols='6')
-              v-btn(depressed, fab, color='teal darken-1', @click='prevSlide') 
-                v-icon.white--text mdi-arrow-left
-            v-col.text-center(cols='6')
-              v-btn(depressed, fab, color='teal darken-1', @click='nextSlide')
-                v-icon.white--text mdi-arrow-right
-
-    p {{ moyamoya }}
-    p {{ page }}
 </template>
 
 <script>
