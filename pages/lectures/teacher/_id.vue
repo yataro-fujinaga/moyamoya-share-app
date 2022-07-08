@@ -22,13 +22,7 @@ v-container
           p.font-weight-bold ページ
           #slide-button.mb-4.d-flex
             v-col.text-center(cols='4')
-              v-btn(
-                depressed,
-                fab,
-                color='teal darken-1',
-                @click='prevSlide',
-                v-if='page > 1 ? "depressed" : ""'
-              ) 
+              v-btn(depressed, fab, color='teal darken-1', @click='prevSlide') 
                 v-icon.white--text mdi-arrow-left
             v-col.text-center(cols='4')
               v-btn.white--text.font-weight-bold(
@@ -184,6 +178,7 @@ export default {
     async deleteCollection(path) {
       const database = this.$fire.firestore
       const delCollection = await database.collection(path).get()
+      console.log(delCollection)
       await Promise.all(
         delCollection.docs.map(async (doc) => {
           await database.collection(path).doc(doc.id).delete()
