@@ -9,7 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: yarn install && yarn generate
+      - name: Create .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: echo $ENV_FILE | base64 --decode > .env
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.14.2
+          cache: 'npm'
+      - run: npm i -g yarn
+      - run: yarn install
+      - run: yarn generate
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
