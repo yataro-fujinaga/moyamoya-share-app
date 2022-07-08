@@ -5,11 +5,6 @@ v-container
       BackButton(toUrl='/lectures')
       v-card.mb-2
         LectureCard(:lecture='lecture')
-      h1 リアクション
-      v-card.mb-2(v-for='reaction in reactions', v-bind:key='reaction.id')
-        v-card-text
-          p {{ reaction.data.ts }}
-          p {{ reaction.data.type }}
     v-col(cols='12', xs='12', sm='12', md='6')
       v-card
         v-card-title.font-weight-bold モヤモヤ
@@ -30,6 +25,7 @@ v-container
             v-col.text-center(cols='4')
               v-btn.white--text.font-weight-bold(
                 depressed,
+                disabled,
                 fab,
                 color='teal lighten-2'
               ) {{ page }}
