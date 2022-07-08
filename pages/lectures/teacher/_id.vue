@@ -65,6 +65,10 @@ export default {
       page: 0,
       slideLogId: '',
       classStarted: false,
+      lectureOnSnapshot: null,
+      reactionsOnSnapshot: null,
+      currentSlideLogsOnSnapshot: null,
+      currentSlideLogs: []
     }
   },
   head() {
@@ -74,25 +78,53 @@ export default {
   },
   mounted() {
     const database = this.$fire.firestore
-    this.lecture = database
+    this.lectureOnSnapshot = database
       .collection('lectures')
       .doc(this.$route.params.id)
-      .get()
-      .then((doc) => {
+      .onSnapshot((doc) => {
         this.lecture = doc.data()
       })
-    database
-      .collection('lectures')
-      .doc(this.$route.params.id)
-      .collection('reactions')
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          this.reactions.push({ id: doc.id, data: doc.data() })
-        })
-      })
+    this.reactionsOnSnapshot = this.fetchReactions()
+    this.currentSlideLogsOnSnapshot = this.fetchCurrentSlideLogs()
+  },
+  destroyed() {
+    this.lectureOnSnapshot();
+    this.reactionsOnSnapshot();
+    this.currentSlideLogsOnSnapshot();
+    console.log('destroyed');
+  },
+  updated() {
+    this.currentSlideLogsOnSnapshot();
+    this.currentSlideLogsOnSnapshot = this.fetchCurrentSlideLogs()
+    this.getMoyamoya()
   },
   methods: {
+    fetchReactions() {
+      const database = this.$fire.firestore
+      return database
+        .collection('lectures')
+        .doc(this.$route.params.id)
+        .collection('reactions').onSnapshot((querySnapshot) => {
+          this.reactions = []
+          querySnapshot.forEach((doc) => {
+            this.reactions.push({ id: doc.id, data: doc.data() })
+          })
+        })
+    },
+    fetchCurrentSlideLogs() {
+      const database = this.$fire.firestore
+      return database
+        .collection('lectures/' + this.$route.params.id + '/slideLogs')
+        .where('page', '==', this.page)
+        .onSnapshot(
+          (querySnapshot) => {
+            this.currentSlideLogs = []
+            querySnapshot.forEach((doc) => {
+              this.currentSlideLogs.push({ id: doc.id, data: doc.data() })
+            })
+          }
+        )
+    },
     async nextSlide() {
       const database = this.$fire.firestore
       await this.getMoyamoya(this.page)
@@ -176,42 +208,8 @@ export default {
         })
       )
     },
-    async getMoyamoya(page) {
-      const database = this.$fire.firestore
-      let allGoodReaction = 0
-      let allBadReaction = 0
-      const nowSlideLogsDoc = await database
-        .collection('lectures/' + this.$route.params.id + '/slideLogs')
-        .where('page', '==', page)
-        .get()
-      await Promise.all(
-        nowSlideLogsDoc.docs.map(async (doc) => {
-          let endTs = doc.data().endTs
-          if (doc.data().endTs === null) {
-            endTs = new Date()
-          }
-          const reaction = await database
-            .collection('lectures/' + this.$route.params.id + '/reactions')
-            .where('ts', '<=', endTs)
-            .where('ts', '>=', doc.data().startTs)
-            .get()
-          const badReaction = reaction.docs.filter(
-            (element) => element.data().type === 'bad'
-          )
-          const goodReaction = reaction.docs.filter(
-            (element) => element.data().type === 'good'
-          )
-          allBadReaction += badReaction.length
-          allGoodReaction += goodReaction.length
-        })
-      )
-      if (allBadReaction + allGoodReaction === 0) {
-        this.moyamoya = 50
-      } else {
-        this.moyamoya = parseInt(
-          (allBadReaction / (allGoodReaction + allBadReaction)) * 100
-        )
-      }
+    getMoyamoya(page) {
+      // よしなに
     },
     delay(n) {
       return new Promise(function (resolve) {
