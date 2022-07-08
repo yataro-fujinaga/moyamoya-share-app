@@ -7,18 +7,20 @@ v-container
         LectureCard(:lecture='lecture')
     v-col(cols='12', xs='12', sm='12', md='6')
       v-card
-        v-card-title.font-weight-bold モヤモヤ
-        v-divider
-        v-card-text
-          .mb-2(v-if='classStarted')
+        v-card-text(v-if='classStarted')
+          .mb-2
+            span.font-weight-bold モヤモヤ
             v-progress-linear(
               color='red',
               background-color='blue lighten-4',
-              height='10',
+              height='30',
               :value='moyamoya',
               striped
             )
-          #slide-button.mb-2.d-flex(v-if='page !== 0')
+          v-divider
+        v-card-text(v-if='page !== 0')
+          p.font-weight-bold ページ
+          #slide-button.mb-4.d-flex
             v-col.text-center(cols='4')
               v-btn(depressed, fab, color='teal darken-1', @click='prevSlide') 
                 v-icon.white--text mdi-arrow-left
@@ -32,6 +34,14 @@ v-container
             v-col.text-center(cols='4')
               v-btn(depressed, fab, color='teal darken-1', @click='nextSlide')
                 v-icon.white--text mdi-arrow-right
+          #slide-slider
+            v-slider(
+              color='teal darken-1',
+              thumb-label='always',
+              v-model='page'
+            )
+          v-divider
+        v-card-text
           v-btn.white--text(
             @click='startLecture',
             block,
