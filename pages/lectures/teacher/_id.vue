@@ -5,29 +5,48 @@ v-container
       BackButton(toUrl='/lectures')
       v-card.mb-2
         LectureCard(:lecture='lecture')
-      h1 リアクション
-      v-card.mb-2(v-for='reaction in reactions', v-bind:key='reaction.id')
-        v-card-text
-          p {{ reaction.data.ts }}
-          p {{ reaction.data.type }}
     v-col(cols='12', xs='12', sm='12', md='6')
       v-card
-        v-card-title.font-weight-bold モヤモヤ
-        v-divider
-        v-card-text
-          .mb-2(v-if='page !== 0')
+        v-card-text(v-if='classStarted')
+          .mb-2
+            span.font-weight-bold モヤモヤ
             v-progress-linear(
               color='red',
               background-color='blue lighten-4',
-              height='10',
+              height='30',
               :value='moyamoya',
               striped
             )
+          v-divider
+        v-card-text(v-if='page !== 0')
+          p.font-weight-bold ページ
+          #slide-button.mb-4.d-flex
+            v-col.text-center(cols='4')
+              v-btn(depressed, fab, color='teal darken-1', @click='prevSlide') 
+                v-icon.white--text mdi-arrow-left
+            v-col.text-center(cols='4')
+              v-btn.white--text.font-weight-bold(
+                depressed,
+                disabled,
+                fab,
+                color='teal lighten-2'
+              ) {{ page }}
+            v-col.text-center(cols='4')
+              v-btn(depressed, fab, color='teal darken-1', @click='nextSlide')
+                v-icon.white--text mdi-arrow-right
+          #slide-slider
+            v-slider(
+              color='teal darken-1',
+              thumb-label='always',
+              v-model='page'
+            )
+          v-divider
+        v-card-text
           v-btn.white--text(
             @click='startLecture',
             block,
             color='teal darken-1',
-            v-if='page === 0'
+            v-if='!classStarted'
           )
             v-icon mdi-play
             span 授業開始
@@ -39,16 +58,6 @@ v-container
           )
             v-icon mdi-stop
             span 授業終了
-          #slide-button.mt-2.d-flex(v-if='page !== 0')
-            v-col.text-center(cols='6')
-              v-btn(depressed, fab, color='teal darken-1', @click='prevSlide') 
-                v-icon.white--text mdi-arrow-left
-            v-col.text-center(cols='6')
-              v-btn(depressed, fab, color='teal darken-1', @click='nextSlide')
-                v-icon.white--text mdi-arrow-right
-
-    p {{ moyamoya }}
-    p {{ page }}
 </template>
 
 <script>
