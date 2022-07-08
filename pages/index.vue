@@ -3,6 +3,9 @@ v-container
   v-row
     v-col(cols='12', xs='12', sm='12', md='12')
       p.text-center.font-weight-bold あなたはどちらですか
+      .moyamoya-image-wrap.d-flex.justify-center.mb-4
+        v-avatar(color='teal lighten-2', size='200')
+          v-img(:src='imageSrc', max-width='200')
       .text-center
         v-btn.pa-2.mr-3(
           depressed,
@@ -20,7 +23,9 @@ v-container
 export default {
   name: 'IndexPage',
   data() {
-    return {}
+    return {
+      imageSrc: require('@/assets/images/moyamoya.png'),
+    }
   },
   head() {
     return {
